@@ -1,0 +1,18 @@
+@startuml java线程状态机图
+[*] --> new
+new --> runnable : 调用start()
+runnable --> running : timeslice
+runnable --> block : 让出timeslice
+state block{
+    [*] --> 等待阻塞
+    等待阻塞 --> waitting_queue
+    [*] --> 同步阻塞
+    同步阻塞 --> lock_pool
+    [*] --> 其他阻塞
+}
+running --> 等待阻塞 : o.wait()
+running --> 获取对象同步锁
+获取对象同步锁 --> 同步阻塞 : 同步锁被占用
+running --> 其他阻塞 : sleep(),join(),I/O
+其他阻塞 --> runnable : sleep(),join()I/O完成
+running --> dead : 正常/异常退出
